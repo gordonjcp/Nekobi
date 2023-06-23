@@ -1,6 +1,7 @@
 /*
- * DISTRHO Nekobi Plugin, based on Nekobee by Sean Bolton and others.
+ * DISTRHO Nekobi Plugin, based on Nekobee by Gordonjcp and others.
  * Copyright (C) 2004 Sean Bolton and others
+ * Copyright (C) 2005, 2023 Gordonjcp
  * Copyright (C) 2013-2022 Filipe Coelho <falktx@falktx.com>
  *
  * This program is free software; you can redistribute it and/or
@@ -21,8 +22,7 @@
 
 #include "nekobee-src/nekobee_synth.c"
 #include "nekobee-src/nekobee_voice.c"
-#include "nekobee-src/nekobee_voice_render.c"
-#include "nekobee-src/minblep_tables.c"
+#include "nekobee-src/voice_render.c"
 
 // -----------------------------------------------------------------------
 // nekobee_handle_raw_event
