@@ -52,7 +52,7 @@ protected:
 
     const char* getLabel() const noexcept override
     {
-        return "Nekobi";
+        return "Nekobi-v8";
     }
 
     const char* getDescription() const override
@@ -62,12 +62,12 @@ protected:
 
     const char* getMaker() const noexcept override
     {
-        return "Sean Bolton, falkTX";
+        return "Gordonjcp, falkTX";
     }
 
     const char* getHomePage() const override
     {
-        return "https://github.com/DISTRHO/Nekobi";
+        return "https://github.com/gordonjcp/Nekobi";
     }
 
     const char* getLicense() const noexcept override
@@ -82,7 +82,7 @@ protected:
 
     int64_t getUniqueId() const noexcept override
     {
-        return d_cconst('D', 'N', 'e', 'k');
+        return d_cconst('D', 'N', 'e', '8');
     }
 
     // -------------------------------------------------------------------

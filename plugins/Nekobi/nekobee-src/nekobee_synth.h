@@ -26,8 +26,6 @@
 #ifndef _XSYNTH_SYNTH_H
 #define _XSYNTH_SYNTH_H
 
-#include <mutex>
-
 #include "nekobee.h"
 #include "nekobee_types.h"
 
@@ -53,8 +51,6 @@ struct _nekobee_synth_t {
 
     /* voice tracking and data */
     unsigned int    note_id;           /* incremented for every new note, used for voice-stealing prioritization */
-    int             polyphony;         /* requested polyphony, must be <= XSYNTH_MAX_POLYPHONY */
-    int             voices;            /* current polyphony, either requested polyphony above or 1 while in monophonic mode */
     int             monophonic;        /* true if operating in monophonic mode */
     int             glide;             /* current glide mode */
     float           last_noteon_pitch; /* glide start pitch for non-legato modes */
@@ -62,21 +58,13 @@ struct _nekobee_synth_t {
     float           vcf_accent;        /* used to emulate the circuit that sweeps the vcf at full resonance */
     float           vca_accent;        /* used to smooth the accent pulse, removing the click */
 
-    //nekobee_voice_t *voice[XSYNTH_MAX_POLYPHONY];
     nekobee_voice_t *voice;
-    std::mutex      voicelist_mutex;
-    int             voicelist_mutex_grab_failed;
 
     /* current non-paramter-mapped controller values */
-    unsigned char   key_pressure[128];
     unsigned char   cc[128];                  /* controller values */
-    unsigned char   channel_pressure;
-    unsigned char   pitch_wheel_sensitivity;  /* in semitones */
-    int             pitch_wheel;              /* range is -8192 - 8191 */
 
     /* translated controller values */
     float           mod_wheel;                /* filter cutoff multiplier, off = 1.0, full on = 0.0 */
-    float           pitch_bend;               /* frequency multiplier, product of wheel setting and sensitivity, center = 1.0 */
     float           cc_volume;                /* volume multiplier, 0.0 to 1.0 */
 
     /* patch parameters */

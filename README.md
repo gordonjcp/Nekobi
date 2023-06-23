@@ -7,3 +7,10 @@ plus a nicer UI with a simple cat animation. 🐈
 
 ## Screenshot
 ![Nekobi](https://raw.githubusercontent.com/DISTRHO/nekobi/master/plugins/Nekobi/Screenshot.png "Nekobi")<br/>
+
+## Building
+Nekobi uses git submodules for the DPF libraries
+
+    $ git submodule update --init --recursive # pull in dependencies
+    $ make # actually build it
+

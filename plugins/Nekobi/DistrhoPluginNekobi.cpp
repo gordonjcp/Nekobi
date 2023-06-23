@@ -25,33 +25,6 @@
 #include "nekobee-src/minblep_tables.c"
 
 // -----------------------------------------------------------------------
-// mutual exclusion
-
-bool dssp_voicelist_mutex_trylock(nekobee_synth_t* const synth)
-{
-    /* Attempt the mutex lock */
-    if (!synth->voicelist_mutex.try_lock())
-    {
-        synth->voicelist_mutex_grab_failed = 1;
-        return false;
-    }
-
-    /* Clean up if a previous mutex grab failed */
-    if (synth->voicelist_mutex_grab_failed)
-    {
-        nekobee_synth_all_voices_off(synth);
-        synth->voicelist_mutex_grab_failed = 0;
-    }
-
-    return true;
-}
-
-void dssp_voicelist_mutex_unlock(nekobee_synth_t* const synth)
-{
-    synth->voicelist_mutex.unlock();
-}
-
-// -----------------------------------------------------------------------
 // nekobee_handle_raw_event
 
 void nekobee_handle_raw_event(nekobee_synth_t* const synth, const uint8_t size, const uint8_t* const data)
@@ -94,8 +67,6 @@ DistrhoPluginNekobi::DistrhoPluginNekobi()
     fSynth.nugget_remains = 0;
 
     fSynth.note_id = 0;
-    fSynth.polyphony = XSYNTH_DEFAULT_POLYPHONY;
-    fSynth.voices = XSYNTH_DEFAULT_POLYPHONY;
     fSynth.monophonic = XSYNTH_MONO_MODE_ONCE;
     fSynth.glide = 0;
     fSynth.last_noteon_pitch = 0.0f;
@@ -106,21 +77,14 @@ DistrhoPluginNekobi::DistrhoPluginNekobi()
         fSynth.held_keys[i] = -1;
 
     fSynth.voice = nekobee_voice_new();
-    fSynth.voicelist_mutex_grab_failed = 0;
-
-    fSynth.channel_pressure = 0;
-    fSynth.pitch_wheel_sensitivity = 0;
-    fSynth.pitch_wheel = 0;
 
     for (int i=0; i<128; ++i)
     {
-        fSynth.key_pressure[i] = 0;
         fSynth.cc[i] = 0;
     }
     fSynth.cc[7] = 127; // full volume
 
     fSynth.mod_wheel  = 1.0f;
-    fSynth.pitch_bend = 1.0f;
     fSynth.cc_volume  = 1.0f;
 
     // Default values
@@ -358,7 +322,7 @@ void DistrhoPluginNekobi::run(const float**, float** outputs, uint32_t frames, c
 
     float* out = outputs[0];
 
-    if (fSynth.voice == nullptr || ! dssp_voicelist_mutex_trylock(&fSynth))
+    if (fSynth.voice == nullptr)
     {
         std::memset(out, 0, sizeof(float)*frames);
         return;
@@ -404,8 +368,6 @@ void DistrhoPluginNekobi::run(const float**, float** outputs, uint32_t frames, c
         framesDone += burstSize;
         fSynth.nugget_remains -= burstSize;
     }
-
-    dssp_voicelist_mutex_unlock(&fSynth);
 }
 
 // -----------------------------------------------------------------------

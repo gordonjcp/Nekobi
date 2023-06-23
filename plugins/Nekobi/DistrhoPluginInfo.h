@@ -20,10 +20,12 @@
 
 #include "DistrhoArtworkNekobi.hpp"
 
+
+// Nekobi-v8 is a working title
 #define DISTRHO_PLUGIN_BRAND   "DISTRHO"
-#define DISTRHO_PLUGIN_NAME    "Nekobi"
-#define DISTRHO_PLUGIN_URI     "http://distrho.sf.net/plugins/Nekobi"
-#define DISTRHO_PLUGIN_CLAP_ID "studio.kx.distrho.Nekobi"
+#define DISTRHO_PLUGIN_NAME    "Nekobi-v8"
+#define DISTRHO_PLUGIN_URI     "https://gjcp.net/plugins/Nekobi-v8"
+#define DISTRHO_PLUGIN_CLAP_ID "studio.kx.distrho.Nekobi-v8"
 
 #define DISTRHO_PLUGIN_HAS_UI        1
 #define DISTRHO_PLUGIN_IS_RT_SAFE    1
