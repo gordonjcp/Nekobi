@@ -77,14 +77,12 @@ nekobee_voice_note_on(nekobee_synth_t *synth, nekobee_voice_t *voice,
             }
         
         if (!_PLAYING(voice)) {
-            voice->lfo_pos = 0.0f;
             voice->vca_eg = 0.0f;
             voice->vcf_eg = 0.0f;
             voice->delay1 = 0.0f;
             voice->delay2 = 0.0f;
             voice->delay3 = 0.0f;
             voice->delay4 = 0.0f;
-            voice->c5     = 0.0f;
             voice->osc_index = 0;
             voice->osc1.last_waveform = -1;
             voice->osc1.pos = 0.0f;

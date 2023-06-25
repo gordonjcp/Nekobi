@@ -16,6 +16,8 @@
  * For a full copy of the GNU General Public License see the LICENSE file.
  */
 
+#include "nekobee_synth.h"
+
 float nekobee_pitch[128];
 
 void nekobee_init_tables(void) {

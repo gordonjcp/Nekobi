@@ -91,13 +91,9 @@ struct _nekobee_voice_t
     unsigned char velocity;
     unsigned char rvelocity;   /* the note-off velocity */
 
-    /* translated controller values */
-    float         pressure;    /* filter resonance multiplier, off = 1.0, full on = 0.0 */
-
     /* persistent voice state */
     float         prev_pitch,
-                  target_pitch,
-                  lfo_pos;
+                  target_pitch;
     struct blosc  osc1;
     float         vca_eg,
                   vcf_eg,
@@ -105,14 +101,11 @@ struct _nekobee_voice_t
                   delay1,
                   delay2,
                   delay3,
-                  delay4,
-                  c5;
+                  delay4;
     unsigned char vca_eg_phase,
                   vcf_eg_phase;
     int           osc_index;       /* shared index into osc_audio */
     float         osc_audio[MINBLEP_BUFFER_LENGTH];
-    float         freqcut_buf[XSYNTH_NUGGET_SIZE];
-    float         vca_buf[XSYNTH_NUGGET_SIZE];
 };
 
 #define _PLAYING(voice)    ((voice)->status != XSYNTH_VOICE_OFF)
