@@ -33,20 +33,6 @@
 /* maximum size of a rendering burst */
 #define XSYNTH_NUGGET_SIZE      64
 
-#if 0
-struct _nekobee_patch_t
-{
-    float         tuning;
-    unsigned char waveform;
-    float         cutoff;
-    float         resonance;
-    float         envmod;
-    float         decay;
-    float         accent;
-    float         volume;
-};
-#endif
-
 enum nekobee_voice_status
 {
     XSYNTH_VOICE_OFF,       /* silent: is not processed by render loop */
@@ -92,12 +78,6 @@ struct _nekobee_voice_t
     int           osc_index;       /* shared index into osc_audio */
     float         osc_audio[XSYNTH_NUGGET_SIZE];
 };
-
-#define _PLAYING(voice)    ((voice)->status != XSYNTH_VOICE_OFF)
-#define _ON(voice)         ((voice)->status == XSYNTH_VOICE_ON)
-#define _SUSTAINED(voice)  ((voice)->status == XSYNTH_VOICE_SUSTAINED)
-#define _RELEASED(voice)   ((voice)->status == XSYNTH_VOICE_RELEASED)
-#define _AVAILABLE(voice)  ((voice)->status == XSYNTH_VOICE_OFF)
 
 extern float nekobee_pitch[128];
 

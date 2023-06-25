@@ -26,7 +26,6 @@
 #ifndef _XSYNTH_SYNTH_H
 #define _XSYNTH_SYNTH_H
 
-#include "nekobee.h"
 #include "nekobee_types.h"
 
 /*
@@ -58,43 +57,16 @@ struct _nekobee_synth_t {
     float          volume;
 };
 
-void nekobee_synth_all_voices_off(nekobee_synth_t *synth);
+
 void nekobee_synth_note_off(nekobee_synth_t *synth, unsigned char key,
                             unsigned char rvelocity);
-void nekobee_synth_all_notes_off(nekobee_synth_t *synth);
+
 void nekobee_synth_note_on(nekobee_synth_t *synth, unsigned char key,
                            unsigned char velocity);
-void nekobee_synth_control_change(nekobee_synth_t *synth, unsigned int param,
-                                  signed int value);
-void nekobee_synth_init_controls(nekobee_synth_t *synth);
+
+
 void nekobee_synth_render_voices(nekobee_synth_t *synth, float *out,
                                  unsigned long sample_count,
                                  int do_control_update);
-
-/* these come right out of alsa/asoundef.h */
-#define MIDI_CTL_MSB_MODWHEEL           0x01    /**< Modulation */
-#define MIDI_CTL_MSB_PORTAMENTO_TIME    0x05    /**< Portamento time */
-#define MIDI_CTL_MSB_MAIN_VOLUME        0x07    /**< Main volume */
-#define MIDI_CTL_MSB_BALANCE            0x08    /**< Balance */
-#define MIDI_CTL_LSB_MODWHEEL           0x21    /**< Modulation */
-#define MIDI_CTL_LSB_PORTAMENTO_TIME    0x25    /**< Portamento time */
-#define MIDI_CTL_LSB_MAIN_VOLUME        0x27    /**< Main volume */
-#define MIDI_CTL_LSB_BALANCE            0x28    /**< Balance */
-#define MIDI_CTL_SUSTAIN                0x40    /**< Sustain pedal */
-
-// nekobee defines
-#define MIDI_CTL_TUNING                 0x4b    // impossible
-#define MIDI_CTL_WAVEFORM               0x46    // select waveform
-#define MIDI_CTL_CUTOFF                 0x4a    // VCF Cutoff
-#define MIDI_CTL_RESONANCE              0x47    // VCF Resonance
-#define MIDI_CTL_ENVMOD                 0x01    // cheat and use modwheel
-#define MIDI_CTL_DECAY                  0x48    // Decay time (well release really)
-#define MIDI_CTL_ACCENT                 0x4c    // impossible
-
-#define MIDI_CTL_ALL_SOUNDS_OFF         0x78    /**< All sounds off */
-#define MIDI_CTL_RESET_CONTROLLERS      0x79    /**< Reset Controllers */
-#define MIDI_CTL_ALL_NOTES_OFF          0x7b    /**< All notes off */
-
-#define XSYNTH_SYNTH_SUSTAINED(_s)  ((_s)->cc[MIDI_CTL_SUSTAIN] >= 64)
 
 #endif /* _XSYNTH_SYNTH_H */
