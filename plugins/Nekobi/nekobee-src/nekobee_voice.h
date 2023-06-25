@@ -33,23 +33,7 @@
 /* maximum size of a rendering burst */
 #define XSYNTH_NUGGET_SIZE      64
 
-/* minBLEP constants */
-/* minBLEP table oversampling factor (must be a power of two): */
-#define MINBLEP_PHASES          64
-/* MINBLEP_PHASES minus one: */
-#define MINBLEP_PHASE_MASK      63
-/* length in samples of (truncated) step discontinuity delta: */
-#define STEP_DD_PULSE_LENGTH    72
-/* length in samples of (truncated) slope discontinuity delta: */
-#define SLOPE_DD_PULSE_LENGTH   71
-/* the longer of the two above: */
-#define LONGEST_DD_PULSE_LENGTH STEP_DD_PULSE_LENGTH
-/* MINBLEP_BUFFER_LENGTH must be at least XSYNTH_NUGGET_SIZE plus
- * LONGEST_DD_PULSE_LENGTH, and not less than twice LONGEST_DD_PULSE_LENGTH: */
-#define MINBLEP_BUFFER_LENGTH  512
-/* delay between start of DD pulse and the discontinuity, in samples: */
-#define DD_SAMPLE_DELAY          4
-
+#if 0
 struct _nekobee_patch_t
 {
     float         tuning;
@@ -61,6 +45,7 @@ struct _nekobee_patch_t
     float         accent;
     float         volume;
 };
+#endif
 
 enum nekobee_voice_status
 {
@@ -105,7 +90,7 @@ struct _nekobee_voice_t
     unsigned char vca_eg_phase,
                   vcf_eg_phase;
     int           osc_index;       /* shared index into osc_audio */
-    float         osc_audio[MINBLEP_BUFFER_LENGTH];
+    float         osc_audio[XSYNTH_NUGGET_SIZE];
 };
 
 #define _PLAYING(voice)    ((voice)->status != XSYNTH_VOICE_OFF)
@@ -116,29 +101,17 @@ struct _nekobee_voice_t
 
 extern float nekobee_pitch[128];
 
-typedef struct { float value, delta; } float_value_delta;
-extern float_value_delta step_dd_table[];
-
-extern float slope_dd_table[];
-
 /* nekobee_voice.c */
 nekobee_voice_t *nekobee_voice_new();
 void             nekobee_voice_note_on(nekobee_synth_t *synth,
                                      nekobee_voice_t *voice,
                                      unsigned char key,
                                      unsigned char velocity);
-void             nekobee_voice_remove_held_key(nekobee_synth_t *synth,
-                                             unsigned char key);
 void             nekobee_voice_note_off(nekobee_synth_t *synth,
                                       nekobee_voice_t *voice,
                                       unsigned char key,
                                       unsigned char rvelocity);
-void             nekobee_voice_release_note(nekobee_synth_t *synth,
-                                          nekobee_voice_t *voice);
-void             nekobee_voice_set_ports(nekobee_synth_t *synth,
-                                       nekobee_patch_t *patch);
-void             nekobee_voice_update_pressure_mod(nekobee_synth_t *synth,
-                                                 nekobee_voice_t *voice);
+
 
 /* nekobee_voice_render.c */
 void nekobee_init_tables(void);
@@ -159,7 +132,7 @@ nekobee_voice_off(nekobee_voice_t* voice)
 {
     voice->status = XSYNTH_VOICE_OFF;
     /* silence the oscillator buffer for the next use */
-    memset(voice->osc_audio, 0, MINBLEP_BUFFER_LENGTH * sizeof(float));
+    memset(voice->osc_audio, 0, XSYNTH_NUGGET_SIZE * sizeof(float));
     /* -FIX- decrement active voice count? */
 }
 

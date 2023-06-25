@@ -29,17 +29,6 @@
 #include "nekobee.h"
 #include "nekobee_types.h"
 
-#define XSYNTH_MONO_MODE_OFF  0
-#define XSYNTH_MONO_MODE_ON   1
-#define XSYNTH_MONO_MODE_ONCE 2
-#define XSYNTH_MONO_MODE_BOTH 3
-
-#define XSYNTH_GLIDE_MODE_LEGATO   0
-#define XSYNTH_GLIDE_MODE_INITIAL  1
-#define XSYNTH_GLIDE_MODE_ALWAYS   2
-#define XSYNTH_GLIDE_MODE_LEFTOVER 3
-#define XSYNTH_GLIDE_MODE_OFF      4
-
 /*
  * nekobee_synth_t
  */
@@ -51,21 +40,12 @@ struct _nekobee_synth_t {
 
     /* voice tracking and data */
     unsigned int    note_id;           /* incremented for every new note, used for voice-stealing prioritization */
-    int             monophonic;        /* true if operating in monophonic mode */
-    int             glide;             /* current glide mode */
     float           last_noteon_pitch; /* glide start pitch for non-legato modes */
     signed char     held_keys[8];      /* for monophonic key tracking, an array of note-ons, most recently received first */
     float           vcf_accent;        /* used to emulate the circuit that sweeps the vcf at full resonance */
     float           vca_accent;        /* used to smooth the accent pulse, removing the click */
 
     nekobee_voice_t *voice;
-
-    /* current non-paramter-mapped controller values */
-    unsigned char   cc[128];                  /* controller values */
-
-    /* translated controller values */
-    float           mod_wheel;                /* filter cutoff multiplier, off = 1.0, full on = 0.0 */
-    float           cc_volume;                /* volume multiplier, 0.0 to 1.0 */
 
     /* patch parameters */
     float          tuning;

@@ -19,15 +19,17 @@
 
 #include "DistrhoPluginNekobi.hpp"
 
-
-#include "nekobee-src/nekobee_synth.c"
-#include "nekobee-src/nekobee_voice.c"
+#include "nekobee-src/synth.c"
+//#include "nekobee-src/nekobee_voice.c"
 #include "nekobee-src/voice_render.c"
+
+#define XSYNTH_NUGGET_SIZE 64
+#include "nekobee-src/nekobee_voice.h"
 
 // -----------------------------------------------------------------------
 // nekobee_handle_raw_event
 
-void nekobee_handle_raw_event(nekobee_synth_t* const synth, const uint8_t size, const uint8_t* const data)
+void nekobee_handle_raw_event(nekobee_synth_t *const synth, const uint8_t size, const uint8_t *const data)
 {
     if (size != 3)
         return;
@@ -43,14 +45,10 @@ void nekobee_handle_raw_event(nekobee_synth_t* const synth, const uint8_t size, 
         else
             nekobee_synth_note_off(synth, data[1], 64); /* shouldn't happen, but... */
         break;
-    case 0xB0:
-        nekobee_synth_control_change(synth, data[1], data[2]);
-        break;
     default:
         break;
     }
 }
-
 
 START_NAMESPACE_DISTRHO
 
@@ -67,25 +65,18 @@ DistrhoPluginNekobi::DistrhoPluginNekobi()
     fSynth.nugget_remains = 0;
 
     fSynth.note_id = 0;
-    fSynth.monophonic = XSYNTH_MONO_MODE_ONCE;
-    fSynth.glide = 0;
+
     fSynth.last_noteon_pitch = 0.0f;
     fSynth.vcf_accent = 0.0f;
     fSynth.vca_accent = 0.0f;
 
-    for (int i=0; i<8; ++i)
+    for (int i = 0; i < 8; ++i)
         fSynth.held_keys[i] = -1;
 
-    fSynth.voice = nekobee_voice_new();
-
-    for (int i=0; i<128; ++i)
-    {
-        fSynth.cc[i] = 0;
-    }
-    fSynth.cc[7] = 127; // full volume
-
-    fSynth.mod_wheel  = 1.0f;
-    fSynth.cc_volume  = 1.0f;
+    // FIXME
+    //fSynth.voice = nekobee_voice_new();
+    fSynth.voice = (nekobee_voice_t *)calloc(sizeof(nekobee_voice_t), 1);
+    
 
     // Default values
     fParams.waveform = 0.0f;
@@ -93,19 +84,19 @@ DistrhoPluginNekobi::DistrhoPluginNekobi()
     fParams.cutoff = 25.0f;
     fParams.resonance = 25.0f;
     fParams.envMod = 50.0f;
-    fParams.decay  = 75.0f;
+    fParams.decay = 75.0f;
     fParams.accent = 25.0f;
     fParams.volume = 75.0f;
 
     // Internal stuff
-    fSynth.waveform  = 0.0f;
-    fSynth.tuning    = 1.0f;
-    fSynth.cutoff    = 5.0f;
+    fSynth.waveform = 0.0f;
+    fSynth.tuning = 1.0f;
+    fSynth.cutoff = 5.0f;
     fSynth.resonance = 0.8f;
-    fSynth.envmod    = 0.3f;
-    fSynth.decay     = 0.0002f;
-    fSynth.accent    = 0.3f;
-    fSynth.volume    = 0.75f;
+    fSynth.envmod = 0.3f;
+    fSynth.decay = 0.0002f;
+    fSynth.accent = 0.3f;
+    fSynth.volume = 0.75f;
 
     // reset
     deactivate();
@@ -119,29 +110,29 @@ DistrhoPluginNekobi::~DistrhoPluginNekobi()
 // -----------------------------------------------------------------------
 // Init
 
-void DistrhoPluginNekobi::initAudioPort(bool input, uint32_t index, AudioPort& port)
+void DistrhoPluginNekobi::initAudioPort(bool input, uint32_t index, AudioPort &port)
 {
     port.groupId = kPortGroupMono;
 
     Plugin::initAudioPort(input, index, port);
 }
 
-void DistrhoPluginNekobi::initParameter(uint32_t index, Parameter& parameter)
+void DistrhoPluginNekobi::initParameter(uint32_t index, Parameter &parameter)
 {
     switch (index)
     {
     case paramWaveform:
-        parameter.hints      = kParameterIsAutomatable|kParameterIsInteger;
-        parameter.name       = "Waveform";
-        parameter.symbol     = "waveform";
+        parameter.hints = kParameterIsAutomatable | kParameterIsInteger;
+        parameter.name = "Waveform";
+        parameter.symbol = "waveform";
         parameter.ranges.def = 0.0f;
         parameter.ranges.min = 0.0f;
         parameter.ranges.max = 1.0f;
         parameter.enumValues.count = 2;
         parameter.enumValues.restrictedMode = true;
-        parameter.midiCC = 70; //Sound Variation
+        parameter.midiCC = 70; // Sound Variation
         {
-            ParameterEnumerationValue* const enumValues = new ParameterEnumerationValue[2];
+            ParameterEnumerationValue *const enumValues = new ParameterEnumerationValue[2];
             enumValues[0].value = 0.0f;
             enumValues[0].label = "Square";
             enumValues[1].value = 1.0f;
@@ -150,73 +141,73 @@ void DistrhoPluginNekobi::initParameter(uint32_t index, Parameter& parameter)
         }
         break;
     case paramTuning:
-        parameter.hints      = kParameterIsAutomatable; // was 0.5 <-> 2.0, log
-        parameter.name       = "Tuning";
-        parameter.symbol     = "tuning";
+        parameter.hints = kParameterIsAutomatable; // was 0.5 <-> 2.0, log
+        parameter.name = "Tuning";
+        parameter.symbol = "tuning";
         parameter.ranges.def = 0.0f;
         parameter.ranges.min = -12.0f;
         parameter.ranges.max = 12.0f;
         parameter.midiCC = 75;
         break;
     case paramCutoff:
-        parameter.hints      = kParameterIsAutomatable; // modified x2.5
-        parameter.name       = "Cutoff";
-        parameter.symbol     = "cutoff";
-        parameter.unit       = "%";
+        parameter.hints = kParameterIsAutomatable; // modified x2.5
+        parameter.name = "Cutoff";
+        parameter.symbol = "cutoff";
+        parameter.unit = "%";
         parameter.ranges.def = 25.0f;
         parameter.ranges.min = 0.0f;
         parameter.ranges.max = 100.0f;
         parameter.midiCC = 74;
         break;
     case paramResonance:
-        parameter.hints      = kParameterIsAutomatable; // modified x100
-        parameter.name       = "VCF Resonance";
-        parameter.symbol     = "resonance";
-        parameter.unit       = "%";
+        parameter.hints = kParameterIsAutomatable; // modified x100
+        parameter.name = "VCF Resonance";
+        parameter.symbol = "resonance";
+        parameter.unit = "%";
         parameter.ranges.def = 25.0f;
         parameter.ranges.min = 0.0f;
         parameter.ranges.max = 95.0f;
         parameter.midiCC = 71;
         break;
     case paramEnvMod:
-        parameter.hints      = kParameterIsAutomatable; // modified x100
-        parameter.name       = "Env Mod";
-        parameter.symbol     = "env_mod";
-        parameter.unit       = "%";
+        parameter.hints = kParameterIsAutomatable; // modified x100
+        parameter.name = "Env Mod";
+        parameter.symbol = "env_mod";
+        parameter.unit = "%";
         parameter.ranges.def = 50.0f;
         parameter.ranges.min = 0.0f;
         parameter.ranges.max = 100.0f;
-        parameter.midiCC = 1; //Mod Wheel
+        parameter.midiCC = 1; // Mod Wheel
         break;
     case paramDecay:
-        parameter.hints      = kParameterIsAutomatable; // was 0.000009 <-> 0.0005, log
-        parameter.name       = "Decay";
-        parameter.symbol     = "decay";
-        parameter.unit       = "%";
+        parameter.hints = kParameterIsAutomatable; // was 0.000009 <-> 0.0005, log
+        parameter.name = "Decay";
+        parameter.symbol = "decay";
+        parameter.unit = "%";
         parameter.ranges.def = 75.0f;
         parameter.ranges.min = 0.0f;
         parameter.ranges.max = 100.0f;
         parameter.midiCC = 72;
         break;
     case paramAccent:
-        parameter.hints      = kParameterIsAutomatable; // modified x100
-        parameter.name       = "Accent";
-        parameter.symbol     = "accent";
-        parameter.unit       = "%";
+        parameter.hints = kParameterIsAutomatable; // modified x100
+        parameter.name = "Accent";
+        parameter.symbol = "accent";
+        parameter.unit = "%";
         parameter.ranges.def = 25.0f;
         parameter.ranges.min = 0.0f;
         parameter.ranges.max = 100.0f;
         parameter.midiCC = 76;
         break;
     case paramVolume:
-        parameter.hints      = kParameterIsAutomatable; // modified x100
-        parameter.name       = "Volume";
-        parameter.symbol     = "volume";
-        parameter.unit       = "%";
+        parameter.hints = kParameterIsAutomatable; // modified x100
+        parameter.name = "Volume";
+        parameter.symbol = "volume";
+        parameter.unit = "%";
         parameter.ranges.def = 75.0f;
         parameter.ranges.min = 0.0f;
         parameter.ranges.max = 100.0f;
-        parameter.midiCC = 7; //Volume
+        parameter.midiCC = 7; // Volume
         break;
     }
 }
@@ -260,37 +251,37 @@ void DistrhoPluginNekobi::setParameterValue(uint32_t index, float value)
         break;
     case paramTuning:
         fParams.tuning = value;
-        fSynth.tuning = exp2f( value / 12.0f );
+        fSynth.tuning = exp2f(value / 12.0f);
         DISTRHO_SAFE_ASSERT(fSynth.tuning >= 0.5f && fSynth.tuning <= 2.0f);
         break;
     case paramCutoff:
         fParams.cutoff = value;
-        fSynth.cutoff = value/2.5f;
+        fSynth.cutoff = value / 2.5f;
         DISTRHO_SAFE_ASSERT(fSynth.cutoff >= 0.0f && fSynth.cutoff <= 40.0f);
         break;
     case paramResonance:
         fParams.resonance = value;
-        fSynth.resonance = value/100.0f;
+        fSynth.resonance = value / 100.0f;
         DISTRHO_SAFE_ASSERT(fSynth.resonance >= 0.0f && fSynth.resonance <= 0.95f);
         break;
     case paramEnvMod:
         fParams.envMod = value;
-        fSynth.envmod = value/100.0f;
+        fSynth.envmod = value / 100.0f;
         DISTRHO_SAFE_ASSERT(fSynth.envmod >= 0.0f && fSynth.envmod <= 1.0f);
         break;
     case paramDecay:
         fParams.decay = value;
-        fSynth.decay = value/100.0f * 0.000491f + 0.000009f; // FIXME: log?
+        fSynth.decay = value / 100.0f * 0.000491f + 0.000009f; // FIXME: log?
         DISTRHO_SAFE_ASSERT(fSynth.decay >= 0.000009f && fSynth.decay <= 0.0005f);
         break;
     case paramAccent:
         fParams.accent = value;
-        fSynth.accent = value/100.0f;
+        fSynth.accent = value / 100.0f;
         DISTRHO_SAFE_ASSERT(fSynth.accent >= 0.0f && fSynth.accent <= 1.0f);
         break;
     case paramVolume:
         fParams.volume = value;
-        fSynth.volume = value/100.0f;
+        fSynth.volume = value / 100.0f;
         DISTRHO_SAFE_ASSERT(fSynth.volume >= 0.0f && fSynth.volume <= 1.0f);
         break;
     }
@@ -314,17 +305,17 @@ void DistrhoPluginNekobi::deactivate()
         nekobee_synth_all_voices_off(&fSynth);
 }
 
-void DistrhoPluginNekobi::run(const float**, float** outputs, uint32_t frames, const MidiEvent* midiEvents, uint32_t midiEventCount)
+void DistrhoPluginNekobi::run(const float **, float **outputs, uint32_t frames, const MidiEvent *midiEvents, uint32_t midiEventCount)
 {
     uint32_t framesDone = 0;
     uint32_t curEventIndex = 0;
     uint32_t burstSize;
 
-    float* out = outputs[0];
+    float *out = outputs[0];
 
     if (fSynth.voice == nullptr)
     {
-        std::memset(out, 0, sizeof(float)*frames);
+        std::memset(out, 0, sizeof(float) * frames);
         return;
     }
 
@@ -364,7 +355,7 @@ void DistrhoPluginNekobi::run(const float**, float** outputs, uint32_t frames, c
             burstSize = frames - framesDone;
 
         /* render the burst */
-        nekobee_synth_render_voices(&fSynth, out + framesDone, burstSize, (burstSize == fSynth.nugget_remains));
+        nekobee_synth_render_voice(&fSynth, out + framesDone, burstSize, (burstSize == fSynth.nugget_remains));
         framesDone += burstSize;
         fSynth.nugget_remains -= burstSize;
     }
@@ -372,7 +363,7 @@ void DistrhoPluginNekobi::run(const float**, float** outputs, uint32_t frames, c
 
 // -----------------------------------------------------------------------
 
-Plugin* createPlugin()
+Plugin *createPlugin()
 {
     return new DistrhoPluginNekobi();
 }

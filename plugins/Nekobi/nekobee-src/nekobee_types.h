@@ -25,6 +25,5 @@
 
 typedef struct _nekobee_synth_t nekobee_synth_t;
 typedef struct _nekobee_voice_t nekobee_voice_t;
-typedef struct _nekobee_patch_t nekobee_patch_t;
 
 #endif /* _XSYNTH_TYPES_H */
