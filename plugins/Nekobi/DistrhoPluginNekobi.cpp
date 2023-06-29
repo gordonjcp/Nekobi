@@ -43,7 +43,7 @@ void nekobee_handle_raw_event(nekobee_synth_t *const synth, const uint8_t size, 
         if (data[2] > 0)
             nekobee_synth_note_on(synth, data[1], data[2]);
         else
-            nekobee_synth_note_off(synth, data[1], 64); /* shouldn't happen, but... */
+            nekobee_synth_note_off(synth, data[1], 64); // Note On 0 Velocity, for running status
         break;
     default:
         break;
@@ -79,24 +79,14 @@ DistrhoPluginNekobi::DistrhoPluginNekobi()
     
 
     // Default values
-    fParams.waveform = 0.0f;
-    fParams.tuning = 0.0f;
-    fParams.cutoff = 25.0f;
-    fParams.resonance = 25.0f;
-    fParams.envMod = 50.0f;
-    fParams.decay = 75.0f;
-    fParams.accent = 25.0f;
-    fParams.volume = 75.0f;
-
-    // Internal stuff
-    fSynth.waveform = 0.0f;
-    fSynth.tuning = 1.0f;
-    fSynth.cutoff = 5.0f;
-    fSynth.resonance = 0.8f;
-    fSynth.envmod = 0.3f;
-    fSynth.decay = 0.0002f;
-    fSynth.accent = 0.3f;
-    fSynth.volume = 0.75f;
+    setParameterValue(paramWaveform, 0);    // squarewave
+    setParameterValue(paramTuning, 0);      // centre
+    setParameterValue(paramCutoff, 27);     // up a bit
+    setParameterValue(paramResonance, 0);   // resonance off
+    setParameterValue(paramEnvMod, 33);     // on some
+    setParameterValue(paramDecay, 100);     // maximum
+    setParameterValue(paramAccent, 50);     // half
+    setParameterValue(paramVolume, 66);     // mostly up
 
     // reset
     deactivate();
@@ -154,7 +144,7 @@ void DistrhoPluginNekobi::initParameter(uint32_t index, Parameter &parameter)
         parameter.name = "Cutoff";
         parameter.symbol = "cutoff";
         parameter.unit = "%";
-        parameter.ranges.def = 25.0f;
+        parameter.ranges.def = 27.0f;
         parameter.ranges.min = 0.0f;
         parameter.ranges.max = 100.0f;
         parameter.midiCC = 74;
@@ -164,9 +154,9 @@ void DistrhoPluginNekobi::initParameter(uint32_t index, Parameter &parameter)
         parameter.name = "VCF Resonance";
         parameter.symbol = "resonance";
         parameter.unit = "%";
-        parameter.ranges.def = 25.0f;
+        parameter.ranges.def = 0.0f;
         parameter.ranges.min = 0.0f;
-        parameter.ranges.max = 95.0f;
+        parameter.ranges.max = 100.0f;
         parameter.midiCC = 71;
         break;
     case paramEnvMod:
@@ -174,7 +164,7 @@ void DistrhoPluginNekobi::initParameter(uint32_t index, Parameter &parameter)
         parameter.name = "Env Mod";
         parameter.symbol = "env_mod";
         parameter.unit = "%";
-        parameter.ranges.def = 50.0f;
+        parameter.ranges.def = 33.0f;
         parameter.ranges.min = 0.0f;
         parameter.ranges.max = 100.0f;
         parameter.midiCC = 1; // Mod Wheel
@@ -184,7 +174,7 @@ void DistrhoPluginNekobi::initParameter(uint32_t index, Parameter &parameter)
         parameter.name = "Decay";
         parameter.symbol = "decay";
         parameter.unit = "%";
-        parameter.ranges.def = 75.0f;
+        parameter.ranges.def = 100.0f;
         parameter.ranges.min = 0.0f;
         parameter.ranges.max = 100.0f;
         parameter.midiCC = 72;
@@ -194,7 +184,7 @@ void DistrhoPluginNekobi::initParameter(uint32_t index, Parameter &parameter)
         parameter.name = "Accent";
         parameter.symbol = "accent";
         parameter.unit = "%";
-        parameter.ranges.def = 25.0f;
+        parameter.ranges.def = 50.0f;
         parameter.ranges.min = 0.0f;
         parameter.ranges.max = 100.0f;
         parameter.midiCC = 76;
@@ -204,7 +194,7 @@ void DistrhoPluginNekobi::initParameter(uint32_t index, Parameter &parameter)
         parameter.name = "Volume";
         parameter.symbol = "volume";
         parameter.unit = "%";
-        parameter.ranges.def = 75.0f;
+        parameter.ranges.def = 66.0f;
         parameter.ranges.min = 0.0f;
         parameter.ranges.max = 100.0f;
         parameter.midiCC = 7; // Volume
@@ -245,43 +235,52 @@ void DistrhoPluginNekobi::setParameterValue(uint32_t index, float value)
     switch (index)
     {
     case paramWaveform:
+        // Waveform is just 0 or 1 for square or saw
         fParams.waveform = value;
         fSynth.waveform = value;
         DISTRHO_SAFE_ASSERT(fSynth.waveform == 0.0f || fSynth.waveform == 1.0f);
         break;
     case paramTuning:
+        // converted from +/- 12 semitones to a multiplier
         fParams.tuning = value;
         fSynth.tuning = exp2f(value / 12.0f);
         DISTRHO_SAFE_ASSERT(fSynth.tuning >= 0.5f && fSynth.tuning <= 2.0f);
         break;
     case paramCutoff:
+        // cutoff pot is 50k log
         fParams.cutoff = value;
-        fSynth.cutoff = value / 2.5f;
-        DISTRHO_SAFE_ASSERT(fSynth.cutoff >= 0.0f && fSynth.cutoff <= 40.0f);
+        fSynth.cutoff = 1.611 * powf(32, value / 100.0f) - 1.611;
+        DISTRHO_SAFE_ASSERT(fSynth.cutoff >= 0.0f && fSynth.cutoff <= 50.0f);
         break;
     case paramResonance:
+        // 50k linear pot, but we don't really need to care about its value
         fParams.resonance = value;
         fSynth.resonance = value / 100.0f;
-        DISTRHO_SAFE_ASSERT(fSynth.resonance >= 0.0f && fSynth.resonance <= 0.95f);
+        DISTRHO_SAFE_ASSERT(fSynth.resonance >= 0.0f && fSynth.resonance <= 1.0f);
         break;
     case paramEnvMod:
+        // Env Mod pot is 50k log, same as cutoff (and wired similarly)
         fParams.envMod = value;
-        fSynth.envmod = value / 100.0f;
-        DISTRHO_SAFE_ASSERT(fSynth.envmod >= 0.0f && fSynth.envmod <= 1.0f);
+        fSynth.envmod = 1.611 * powf(32, value / 100.0f) - 1.611;
+        DISTRHO_SAFE_ASSERT(fSynth.envmod >= 0.0f && fSynth.envmod <= 50.0f);
         break;
     case paramDecay:
+        // decay is a 1M log pot
         fParams.decay = value;
-        fSynth.decay = value / 100.0f * 0.000491f + 0.000009f; // FIXME: log?
-        DISTRHO_SAFE_ASSERT(fSynth.decay >= 0.000009f && fSynth.decay <= 0.0005f);
+        fSynth.decay = 32.255 * powf(32, value / 100.0f) - 32.255;
+        DISTRHO_SAFE_ASSERT(fSynth.decay >= 0.0f && fSynth.decay <= 1000.0f);
         break;
     case paramAccent:
+        // accent is a 50k linear pot, again we don't really need to care about exact value
         fParams.accent = value;
         fSynth.accent = value / 100.0f;
         DISTRHO_SAFE_ASSERT(fSynth.accent >= 0.0f && fSynth.accent <= 1.0f);
         break;
     case paramVolume:
+        // 50k log pot, but we don't care about value
+        // so this can just be 0..1 converted exponentially
         fParams.volume = value;
-        fSynth.volume = value / 100.0f;
+        fSynth.volume = 0.032255 * powf(32, value / 100.0f) - 0.032255;
         DISTRHO_SAFE_ASSERT(fSynth.volume >= 0.0f && fSynth.volume <= 1.0f);
         break;
     }
@@ -312,6 +311,8 @@ void DistrhoPluginNekobi::run(const float **, float **outputs, uint32_t frames, 
     uint32_t burstSize;
 
     float *out = outputs[0];
+
+    printf("params: cutoff %04f envmod %04f decay %04f\n", fSynth.cutoff, fSynth.envmod, fSynth.decay);
 
     if (fSynth.voice == nullptr)
     {
