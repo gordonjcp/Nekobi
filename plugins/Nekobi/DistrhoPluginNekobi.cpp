@@ -312,7 +312,7 @@ void DistrhoPluginNekobi::run(const float **, float **outputs, uint32_t frames, 
 
     float *out = outputs[0];
 
-    printf("params: cutoff %04f envmod %04f decay %04f\n", fSynth.cutoff, fSynth.envmod, fSynth.decay);
+    //printf("params: cutoff %04f envmod %04f decay %04f\n", fSynth.cutoff, fSynth.envmod, fSynth.decay);
 
     if (fSynth.voice == nullptr)
     {

@@ -29,9 +29,6 @@ DistrhoUINekobi::DistrhoUINekobi()
       fImgBackground(Art::backgroundData, Art::backgroundWidth, Art::backgroundHeight, kImageFormatBGR),
       fAboutWindow(this)
 {
-    // about
-    Image aboutImage(Art::aboutData, Art::aboutWidth, Art::aboutHeight, kImageFormatBGR);
-    fAboutWindow.setImage(aboutImage);
 
     // slider
     Image sliderImage(Art::sliderData, Art::sliderWidth, Art::sliderHeight, kImageFormatBGRA);
@@ -43,7 +40,7 @@ DistrhoUINekobi::DistrhoUINekobi()
     fSliderWaveform->setCheckable(true);
     fSliderWaveform->setRange(0.0f, 1.0f);
     fSliderWaveform->setStep(1.0f);
-    fSliderWaveform->setValue(0.0f);
+    fSliderWaveform->setValue(0.000f);
     fSliderWaveform->setCallback(this);
 
     // knobs
@@ -52,27 +49,27 @@ DistrhoUINekobi::DistrhoUINekobi()
     // knob Tuning
     fKnobTuning = new ImageKnob(this, knobImage, ImageKnob::Vertical);
     fKnobTuning->setId(DistrhoPluginNekobi::paramTuning);
-    fKnobTuning->setAbsolutePos(41, 43);
+    fKnobTuning->setAbsolutePos(113, 47);
     fKnobTuning->setRange(-12.0f, 12.0f);
     fKnobTuning->setDefault(0.0f);
     fKnobTuning->setValue(0.0f);
     fKnobTuning->setRotationAngle(305);
-    fKnobTuning->setCallback(this);
+    fKnobTuning->setCallback(this); 
 
     // knob Cutoff
     fKnobCutoff = new ImageKnob(this, knobImage, ImageKnob::Vertical);
     fKnobCutoff->setId(DistrhoPluginNekobi::paramCutoff);
-    fKnobCutoff->setAbsolutePos(185, 43);
+    fKnobCutoff->setAbsolutePos(185, 47);
     fKnobCutoff->setRange(0.0f, 100.0f);
-    fKnobCutoff->setDefault(25.0f);
-    fKnobCutoff->setValue(25.0f);
+    fKnobCutoff->setDefault(50.0f);
+    fKnobCutoff->setValue(50.00f);
     fKnobCutoff->setRotationAngle(305);
     fKnobCutoff->setCallback(this);
 
     // knob Resonance
     fKnobResonance = new ImageKnob(this, knobImage, ImageKnob::Vertical);
     fKnobResonance->setId(DistrhoPluginNekobi::paramResonance);
-    fKnobResonance->setAbsolutePos(257, 43);
+    fKnobResonance->setAbsolutePos(257, 47);
     fKnobResonance->setRange(0.0f, 95.0f);
     fKnobResonance->setDefault(25.0f);
     fKnobResonance->setValue(25.0f);
@@ -82,7 +79,7 @@ DistrhoUINekobi::DistrhoUINekobi()
     // knob Env Mod
     fKnobEnvMod = new ImageKnob(this, knobImage, ImageKnob::Vertical);
     fKnobEnvMod->setId(DistrhoPluginNekobi::paramEnvMod);
-    fKnobEnvMod->setAbsolutePos(329, 43);
+    fKnobEnvMod->setAbsolutePos(329, 47);
     fKnobEnvMod->setRange(0.0f, 100.0f);
     fKnobEnvMod->setDefault(50.0f);
     fKnobEnvMod->setValue(50.0f);
@@ -92,7 +89,7 @@ DistrhoUINekobi::DistrhoUINekobi()
     // knob Decay
     fKnobDecay = new ImageKnob(this, knobImage, ImageKnob::Vertical);
     fKnobDecay->setId(DistrhoPluginNekobi::paramDecay);
-    fKnobDecay->setAbsolutePos(400, 43);
+    fKnobDecay->setAbsolutePos(400, 47);
     fKnobDecay->setRange(0.0f, 100.0f);
     fKnobDecay->setDefault(75.0f);
     fKnobDecay->setValue(75.0f);
@@ -102,7 +99,7 @@ DistrhoUINekobi::DistrhoUINekobi()
     // knob Accent
     fKnobAccent = new ImageKnob(this, knobImage, ImageKnob::Vertical);
     fKnobAccent->setId(DistrhoPluginNekobi::paramAccent);
-    fKnobAccent->setAbsolutePos(473, 43);
+    fKnobAccent->setAbsolutePos(473, 47);
     fKnobAccent->setRange(0.0f, 100.0f);
     fKnobAccent->setDefault(25.0f);
     fKnobAccent->setValue(25.0f);
@@ -112,20 +109,21 @@ DistrhoUINekobi::DistrhoUINekobi()
     // knob Volume
     fKnobVolume = new ImageKnob(this, knobImage, ImageKnob::Vertical);
     fKnobVolume->setId(DistrhoPluginNekobi::paramVolume);
-    fKnobVolume->setAbsolutePos(545, 43);
+    fKnobVolume->setAbsolutePos(545, 47);
     fKnobVolume->setRange(0.0f, 100.0f);
     fKnobVolume->setDefault(75.0f);
     fKnobVolume->setValue(75.0f);
     fKnobVolume->setRotationAngle(305);
     fKnobVolume->setCallback(this);
 
+/*
     // about button
     Image aboutImageNormal(Art::aboutButtonNormalData, Art::aboutButtonNormalWidth, Art::aboutButtonNormalHeight, kImageFormatBGRA);
     Image aboutImageHover(Art::aboutButtonHoverData, Art::aboutButtonHoverWidth, Art::aboutButtonHoverHeight, kImageFormatBGRA);
     fButtonAbout = new ImageButton(this, aboutImageNormal, aboutImageHover, aboutImageHover);
     fButtonAbout->setAbsolutePos(505, 5);
     fButtonAbout->setCallback(this);
-
+*/
     // neko animation
     addIdleCallback(this, 120);
 }

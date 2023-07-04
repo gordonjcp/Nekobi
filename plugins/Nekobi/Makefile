@@ -22,12 +22,14 @@ FILES_UI = \
 # --------------------------------------------------------------
 # Do some magic
 
+EXTRA_UI_LIBS=./redgui/background.o
+
 UI_TYPE = generic
 FILE_BROWSER_DISABLED = true
 include ../../dpf/Makefile.plugins.mk
 
 # --------------------------------------------------------------
-# Extra flags
+# Extra flags 
 
 ifneq ($(WASM),true)
 BASE_FLAGS += -pthread
