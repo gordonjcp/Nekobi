@@ -23,12 +23,12 @@
  * MA 02111-1307, USA.
  */
 
-#ifndef _XSYNTH_VOICE_H
-#define _XSYNTH_VOICE_H
+#ifndef _VOICE_H
+#define _VOICE_H
 
 #include <string.h>
 
-#include "nekobee_types.h"
+#include "types.h"
 
 /* maximum size of a rendering burst */
 #define XSYNTH_NUGGET_SIZE      64
@@ -126,4 +126,4 @@ nekobee_voice_start_voice(nekobee_voice_t *voice)
     /* -FIX- increment active voice count? */
 }
 
-#endif /* _XSYNTH_VOICE_H */
+#endif /* _VOICE_H */

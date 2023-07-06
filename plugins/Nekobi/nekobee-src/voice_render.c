@@ -16,7 +16,7 @@
  * For a full copy of the GNU General Public License see the LICENSE file.
  */
 
-#include "nekobee_synth.h"
+#include "synth.h"
 
 float nekobee_pitch[128];
 

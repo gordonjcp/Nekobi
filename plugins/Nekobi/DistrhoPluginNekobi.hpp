@@ -21,7 +21,7 @@
 
 #include "DistrhoPlugin.hpp"
 
-#include "nekobee-src/nekobee_synth.h"
+#include "nekobee-src/synth.h"
 
 START_NAMESPACE_DISTRHO
 

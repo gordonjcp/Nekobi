@@ -24,7 +24,7 @@
 #include "nekobee-src/voice_render.c"
 
 #define XSYNTH_NUGGET_SIZE 64
-#include "nekobee-src/nekobee_voice.h"
+#include "nekobee-src/voice.h"
 
 // -----------------------------------------------------------------------
 // nekobee_handle_raw_event

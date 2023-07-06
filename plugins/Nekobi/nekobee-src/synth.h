@@ -1,11 +1,6 @@
-/* nekobee DSSI software synthesizer plugin
+/* nekobee TDv8 bass synth plugin
  *
- * Copyright (C) 2004 Sean Bolton and others.
- *
- * Portions of this file may have come from Peter Hanappe's
- * Fluidsynth, copyright (C) 2003 Peter Hanappe and others.
- * Portions of this file may have come from alsa-lib, copyright
- * and licensed under the LGPL v2.1.
+ * Copyright (C) 2023 Gordonjcp, and others
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -23,10 +18,10 @@
  * MA 02111-1307, USA.
  */
 
-#ifndef _XSYNTH_SYNTH_H
-#define _XSYNTH_SYNTH_H
+#ifndef _SYNTH_H
+#define _SYNTH_H
 
-#include "nekobee_types.h"
+#include "types.h"
 
 /*
  * nekobee_synth_t
@@ -69,4 +64,4 @@ void nekobee_synth_render_voices(nekobee_synth_t *synth, float *out,
                                  unsigned long sample_count,
                                  int do_control_update);
 
-#endif /* _XSYNTH_SYNTH_H */
+#endif /* _SYNTH_H */

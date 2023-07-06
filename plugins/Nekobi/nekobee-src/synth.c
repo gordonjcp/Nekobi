@@ -16,8 +16,8 @@
  * For a full copy of the GNU General Public License see the LICENSE file.
  */
 
-#include "nekobee_synth.h"
-#include "nekobee_voice.h"
+#include "synth.h"
+#include "voice.h"
 
 
 void nekobee_synth_all_voices_off(nekobee_synth_t *synth)
