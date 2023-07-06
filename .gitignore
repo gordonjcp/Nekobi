@@ -18,4 +18,5 @@ bin/
 build/
 
 .vs/
-out/notes.txt
+.vscode/
+notes.txt
