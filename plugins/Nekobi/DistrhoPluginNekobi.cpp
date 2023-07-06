@@ -86,7 +86,7 @@ DistrhoPluginNekobi::DistrhoPluginNekobi()
     setParameterValue(paramEnvMod, 33);     // on some
     setParameterValue(paramDecay, 100);     // maximum
     setParameterValue(paramAccent, 50);     // half
-    setParameterValue(paramVolume, 66);     // mostly up
+    setParameterValue(paramVolume, 75);     // mostly up
 
     // reset
     deactivate();
@@ -312,7 +312,7 @@ void DistrhoPluginNekobi::run(const float **, float **outputs, uint32_t frames, 
 
     float *out = outputs[0];
 
-    printf("params: cutoff %04f envmod %04f decay %04f\n", fSynth.cutoff, fSynth.envmod, fSynth.decay);
+    //printf("params: cutoff %04f envmod %04f decay %04f\n", fSynth.cutoff, fSynth.envmod, fSynth.decay);
 
     if (fSynth.voice == nullptr)
     {

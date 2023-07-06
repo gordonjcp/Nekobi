@@ -64,8 +64,8 @@ DistrhoUINekobi::DistrhoUINekobi()
     fKnobCutoff->setId(DistrhoPluginNekobi::paramCutoff);
     fKnobCutoff->setAbsolutePos(185, 43);
     fKnobCutoff->setRange(0.0f, 100.0f);
-    fKnobCutoff->setDefault(25.0f);
-    fKnobCutoff->setValue(25.0f);
+    fKnobCutoff->setDefault(27.0f);
+    fKnobCutoff->setValue(27.0f);
     fKnobCutoff->setRotationAngle(305);
     fKnobCutoff->setCallback(this);
 
@@ -74,8 +74,8 @@ DistrhoUINekobi::DistrhoUINekobi()
     fKnobResonance->setId(DistrhoPluginNekobi::paramResonance);
     fKnobResonance->setAbsolutePos(257, 43);
     fKnobResonance->setRange(0.0f, 95.0f);
-    fKnobResonance->setDefault(25.0f);
-    fKnobResonance->setValue(25.0f);
+    fKnobResonance->setDefault(0.0f);
+    fKnobResonance->setValue(0.0f);
     fKnobResonance->setRotationAngle(305);
     fKnobResonance->setCallback(this);
 
@@ -84,8 +84,8 @@ DistrhoUINekobi::DistrhoUINekobi()
     fKnobEnvMod->setId(DistrhoPluginNekobi::paramEnvMod);
     fKnobEnvMod->setAbsolutePos(329, 43);
     fKnobEnvMod->setRange(0.0f, 100.0f);
-    fKnobEnvMod->setDefault(50.0f);
-    fKnobEnvMod->setValue(50.0f);
+    fKnobEnvMod->setDefault(33.0f);
+    fKnobEnvMod->setValue(33.0f);
     fKnobEnvMod->setRotationAngle(305);
     fKnobEnvMod->setCallback(this);
 
@@ -94,8 +94,8 @@ DistrhoUINekobi::DistrhoUINekobi()
     fKnobDecay->setId(DistrhoPluginNekobi::paramDecay);
     fKnobDecay->setAbsolutePos(400, 43);
     fKnobDecay->setRange(0.0f, 100.0f);
-    fKnobDecay->setDefault(75.0f);
-    fKnobDecay->setValue(75.0f);
+    fKnobDecay->setDefault(100.0f);
+    fKnobDecay->setValue(100.0f);
     fKnobDecay->setRotationAngle(305);
     fKnobDecay->setCallback(this);
 
@@ -104,8 +104,8 @@ DistrhoUINekobi::DistrhoUINekobi()
     fKnobAccent->setId(DistrhoPluginNekobi::paramAccent);
     fKnobAccent->setAbsolutePos(473, 43);
     fKnobAccent->setRange(0.0f, 100.0f);
-    fKnobAccent->setDefault(25.0f);
-    fKnobAccent->setValue(25.0f);
+    fKnobAccent->setDefault(50.0f);
+    fKnobAccent->setValue(50.0f);
     fKnobAccent->setRotationAngle(305);
     fKnobAccent->setCallback(this);
 
