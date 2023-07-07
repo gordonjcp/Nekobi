@@ -64,9 +64,6 @@ DistrhoPluginNekobi::DistrhoPluginNekobi()
     fSynth.deltat = 1.0f / (float)getSampleRate();
     fSynth.nugget_remains = 0;
 
-    fSynth.note_id = 0;
-
-    fSynth.last_noteon_pitch = 0.0f;
     fSynth.vcf_accent = 0.0f;
     fSynth.vca_accent = 0.0f;
 
@@ -76,6 +73,7 @@ DistrhoPluginNekobi::DistrhoPluginNekobi()
     // FIXME
     //fSynth.voice = nekobee_voice_new();
     fSynth.voice = (nekobee_voice_t *)calloc(sizeof(nekobee_voice_t), 1);
+    bzero(fSynth.held_keys, KEY_BUFFER);
     
 
     // Default values
@@ -292,7 +290,6 @@ void DistrhoPluginNekobi::setParameterValue(uint32_t index, float value)
 void DistrhoPluginNekobi::activate()
 {
     fSynth.nugget_remains = 0;
-    fSynth.note_id = 0;
 
     if (fSynth.voice != nullptr)
         nekobee_synth_all_voices_off(&fSynth);

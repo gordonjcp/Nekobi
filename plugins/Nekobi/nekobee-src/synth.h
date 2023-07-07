@@ -23,42 +23,42 @@
 
 #include "types.h"
 
+#define KEY_BUFFER 8
+
 /*
  * nekobee_synth_t
  */
 struct _nekobee_synth_t {
-    /* output */
-    unsigned long   sample_rate;
-    float           deltat;            /* 1 / sample_rate */
-    unsigned long   nugget_remains;
+  /* output */
+  unsigned long sample_rate;
+  float deltat; /* 1 / sample_rate */
+  unsigned long nugget_remains;
 
-    /* voice tracking and data */
-    unsigned int    note_id;           /* incremented for every new note, used for voice-stealing prioritization */
-    float           last_noteon_pitch; /* glide start pitch for non-legato modes */
-    signed char     held_keys[8];      /* for monophonic key tracking, an array of note-ons, most recently received first */
-    float           vcf_accent;        /* used to emulate the circuit that sweeps the vcf at full resonance */
-    float           vca_accent;        /* used to smooth the accent pulse, removing the click */
+  /* voice tracking and data */
+  uint8_t held_keys[KEY_BUFFER]; /* for monophonic key tracking, an array of
+                                    note-ons, most recently received first */
+  float vcf_accent; /* used to emulate the circuit that sweeps the vcf at full
+                       resonance */
+  float vca_accent; /* used to smooth the accent pulse, removing the click */
 
-    nekobee_voice_t *voice;
+  nekobee_voice_t *voice;
 
-    /* patch parameters */
-    float          tuning;
-    float          waveform;
-    float          cutoff;
-    float          resonance;
-    float          envmod;
-    float          decay;
-    float          accent;
-    float          volume;
+  /* patch parameters */
+  float tuning;
+  float waveform;
+  float cutoff;
+  float resonance;
+  float envmod;
+  float decay;
+  float accent;
+  float volume;
 };
-
 
 void nekobee_synth_note_off(nekobee_synth_t *synth, unsigned char key,
                             unsigned char rvelocity);
 
 void nekobee_synth_note_on(nekobee_synth_t *synth, unsigned char key,
                            unsigned char velocity);
-
 
 void nekobee_synth_render_voices(nekobee_synth_t *synth, float *out,
                                  unsigned long sample_count,
