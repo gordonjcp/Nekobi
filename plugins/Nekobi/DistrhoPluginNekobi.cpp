@@ -353,7 +353,7 @@ void DistrhoPluginNekobi::run(const float **, float **outputs, uint32_t frames, 
             burstSize = frames - framesDone;
 
         /* render the burst */
-        nekobee_synth_render_voice(&fSynth, out + framesDone, burstSize, (burstSize == fSynth.nugget_remains));
+        nekobee_voice_render(&fSynth, out + framesDone, burstSize, (burstSize == fSynth.nugget_remains));
         framesDone += burstSize;
         fSynth.nugget_remains -= burstSize;
     }
