@@ -49,14 +49,11 @@ void nekobee_synth_note_off(nekobee_synth_t *synth, unsigned char key,
             synth->held_keys[KEY_BUFFER - 1] = 0;
         }
     }
-
-    printf("------------------------\nafter note off keys are ");
-    for (i = 0; i < KEY_BUFFER; i++)
-        printf("%02x ", (synth->held_keys[i]));
-    printf("\n");
+    if (synth->held_keys[0] != 0) {
+        synth->voice->key = synth->held_keys[0];
+    }
 
     return;
-    (void)key;
     (void)rvelocity;
 }
 
@@ -78,33 +75,18 @@ void nekobee_synth_note_on(nekobee_synth_t *synth, unsigned char key,
     for (i = 0; i < KEY_BUFFER - 1; i++) {
         if (synth->held_keys[i] == key) {
             // found it
-            printf("found existing key %02x\n", key);
             memmove(&synth->held_keys[i], &synth->held_keys[i + 1],
                     KEY_BUFFER - i - 1);
         }
     }
 
     // move the queue up, discarding one off the end
-    printf("%p %p\n", &synth->held_keys,
-           memmove(&synth->held_keys[1], &synth->held_keys[0], KEY_BUFFER - 1));
+    memmove(&synth->held_keys[1], &synth->held_keys[0], KEY_BUFFER - 1);
 
     synth->held_keys[0] = key;
-
-    printf("------------------------\nafter note on keys are ");
-    for (i = 0; i < KEY_BUFFER; i++)
-        printf("%02x ", synth->held_keys[i]);
-    printf("\n");
-
+    synth->voice->key = key;
+    // check if this is the only note sounding
+    synth->glide = (synth->held_keys[1] != 0);
     return;
     (void)velocity;
-}
-
-void nekobee_synth_render_voice(nekobee_synth_t *synth, float *out,
-                                unsigned long sample_count,
-                                int do_control_update) {
-    return;
-    (void)synth;
-    (void)out;
-    (void)sample_count;
-    (void)do_control_update;
 }

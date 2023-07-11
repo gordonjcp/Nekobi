@@ -38,6 +38,7 @@ struct _nekobee_synth_t {
     /* voice tracking and data */
     uint8_t held_keys[KEY_BUFFER]; /* for monophonic key tracking, an array of
                                       note-ons, most recently received first */
+    uint8_t glide;
     float vcf_accent; /* used to emulate the circuit that sweeps the vcf at full
                          resonance */
     float vca_accent; /* used to smooth the accent pulse, removing the click */

@@ -44,7 +44,9 @@ enum nekobee_voice_status {
 
 typedef struct {
     float phase, delay;
+    float w;
 } blosc_t;
+
 
 /*
  * nekobee_voice_t
@@ -77,7 +79,7 @@ void nekobee_voice_note_off(nekobee_synth_t *synth, nekobee_voice_t *voice,
 
 /* nekobee_voice_render.c */
 void nekobee_init_tables(void);
-void nekobee_voice_render(nekobee_synth_t *synth, nekobee_voice_t *voice,
+void nekobee_voice_render(nekobee_synth_t *synth,
                           float *out, unsigned long sample_count,
                           int do_control_update);
 

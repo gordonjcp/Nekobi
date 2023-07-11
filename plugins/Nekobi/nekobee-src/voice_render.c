@@ -17,11 +17,20 @@
  */
 
 #include "synth.h"
+#include "voice.h"
 
 float nekobee_pitch[128];
 
 void nekobee_init_tables(void) {
-    // stub
+    // create an expo pitch table
+
+    int i;
+
+    // having a 6-bit CV DAC means we only need 64 possible pitches
+    for (i = 0; i < 64; i++) {
+        nekobee_pitch[i] = powf(2, (i - 24) / 12.0f);
+    }
+
     return;
 }
 
@@ -41,12 +50,20 @@ void vco(nekobee_synth_t *synth, uint32_t count) {
     float out, t;             // output sample, temporary value for blep
 
     // calculate omega for phase shift
-    // float w = nekobee_pitch[voice->key] * 261.63 * synth->deltat;
-    float w = 261.63 * synth->deltat;
+    float target_w = nekobee_pitch[(voice->key) - 24] * 130.81 * synth->deltat;
+
+    float w = osc->w;
+    if (!synth->glide)
+        w = target_w;
+
 
     // FIXME this only does saws
 
     for (i = 0; i < count; i++) {
+
+        // glide timeconstant is 100k * 0.22uF
+        // for some reason this doesn't sound right - needs a rethink FIXME
+        w = ((target_w - w) * (33 * synth->deltat)) + w;
         phase += w;
         out = delay;
         delay = 0;
@@ -64,6 +81,7 @@ void vco(nekobee_synth_t *synth, uint32_t count) {
     }
     osc->phase = phase;
     osc->delay = delay;
+    osc->w = w;
 }
 
 void nekobee_voice_render(nekobee_synth_t *synth, float *out,
